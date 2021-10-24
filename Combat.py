@@ -82,4 +82,14 @@ class Combat():
             print("Some game-ending function for when raccoons lose")
             # elif enemy.HP > 0 and 
         
-    # def check_status(self, turnorder):
+    def clear_unc(self, combatants):
+        for combatant in combatants:
+            if combatant.HP <= 0:
+                combatants.pop(combatant)
+        return combatants
+
+    # def battle(self, combatants):
+    #     while not (all(item == isinstance(item, Raccoon) for item in combatants) or all(item == isinstance(item, Enemy) for item in combatants)):
+    #         for combatant in combatants:
+    #             #something something accept turn input here for each thingy#
+            
