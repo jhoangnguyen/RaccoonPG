@@ -47,9 +47,9 @@ class Enemy(Animal):
             raccoon.inCombat == False
 
     def nonRacctargeting(self, raccoon_array):
-        raccoon_to_hit = random.randint(1, self.get_party.length())
+        raccoon_to_hit = random.randint(1, len(raccoon_array)) - 1
         self.deal_damage(raccoon_array[raccoon_to_hit])
-
+        return raccoon_to_hit
     def highestLVL(self, raccoons):
         result = 0
         raccoons = sorted(raccoons, key = lambda x: x.LVL)
@@ -57,9 +57,8 @@ class Enemy(Animal):
             if raccoon.LVL > result:
                 result = raccoon.LVL
         return result
-        
+
 class Encounter(Enemy):
-<<<<<<< HEAD
     def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
         super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money)
 
@@ -73,14 +72,6 @@ class Encounter(Enemy):
 
     def STAT_calculator(self, raccoons):
         level = self.highestLVL(raccoons)
-=======
-    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat):
-        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat)
-    
-
-    def STAT_calculator(self, combat, combatants):
-        level = self.highestLVL(combatants)
->>>>>>> 9486f944838d5e46edb4bac444d5d97fd12ccac7
         scalar = 0.04
         self.HP = random.randint(30, 90)
         self.MP = random.randint(30, 70)

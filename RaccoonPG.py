@@ -70,6 +70,9 @@ class Animal:
     def getmoney(self):
         return self.money
 
+    def getName(self):
+        return self.name
+
 
 
     def set_slow_xp(self, EXPcap, LVL):
@@ -82,11 +85,11 @@ class Animal:
         self.EXPcap += (((4 / 5) * (self.LVL ** 4)) + ((self.LVL ** 3) * 5) + (100 * self.LVL))
 
     def damage_formula(self, enemy, POWER, LVL, ATTK, CRIT):
-        roll = random.randit(1, 100)
+        roll = random.randint(1, 100)
         bonus = 1
         if roll <= self.CRIT:
             bonus = 1.5
-        damage = ((((((2 * LVL) / 5) + 2) * self.POWER * (self.ATTK / enemy.getDEF)) / 50) * bonus) // 1
+        damage = ((((((2 * LVL) / 5) + 2) * self.POWER * (self.ATTK / enemy.getDEF())) / 50) * bonus) // 1
         return damage
 
     def target(self, combatants):
@@ -99,23 +102,23 @@ class Animal:
         stats = 'Level: {0}, Name: {1}, Health: {2}, Mana: {3}, Attack: {4}, Defense: {5}, M_Attack: {6}, M_Defense: {7}, Dodge: {8}, Speed: {9}, EXP: {10}, EXPcap: {11}, Power: {12}, CRTchance: {13}, Turn: {14}, inCombat: {15}, Money: {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
-    def get_stats(self):
+    def get_stats(self, id):
         result = ""
-        stats = {"Level:": self.LVL, "Name:": self.name, "Health:": self.HP, "Mana:": self.MP, \
+        stats = {"Level:": self.LVL, "Name:": id, "Health:": self.HP, "Mana:": self.MP, \
                 "Attack:": self.ATTK, "Defense:": self.DEF, "M_Attack:": self.MATTK, "M_Defense:": self.MDEF, \
-                "Dodge:": self.DODGE, "Speed:": self.SPD, "EXP:": self.EXP, "EXPCap:": self.EXPcap, \
+                "Dodge:": self.DODGE, "Speed:": self.SPD, "EXP:": f"{self.EXP:.2f}", "EXPCap:": self.EXPcap, \
                 "Power:": self.POWER, "CRTchance:": self.CRIT, "Turn:": self.turn, "inCombat:": self.inCombat, \
                 "Money:": self.money}
-        result += "-" * 70 + "\n"
+        result += "-" * 100 + "\n"
         for i in range(len(stats)):
             label = list(stats.keys())[i]
             val = str(list(stats.values())[i])
-            gap = " " * (20 - (len(label) + len(val) + 1))
+            gap = " " * (35 - (len(label) + len(val) + 1))
             if i % 4 == 0:
                 result += label + " " + val + gap + "\n"
             else:
                 result += label + " " + val + gap
-        result += "-" * 70 + "\n"
+        result += "-" * 100 + "\n"
         return result
 
 
@@ -147,7 +150,7 @@ class Raccoon(Animal):
 
     def increase_mana(self, value):
         self.MP += value
-    
+
     #TO BE USED ON BOT RESTART#
     def passive_xp(self, num_msg):
         self.EXP += float(num_msg * (1/10000))

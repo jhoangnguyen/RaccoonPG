@@ -10,7 +10,7 @@ from RaccoonPG import *
 import asyncio
 import random
 import copy
-from Combat import *
+from Combat import Battle
 from NonRaccoon import *
 
 #from decimal import Decimal
@@ -76,6 +76,53 @@ def update(players):
 @client.event
 async def on_ready():
     global fighterIDs
+    async def showEnemies(arr):
+        imageNames = []
+        for key in arr:
+            imageNames.append("./images/" + key.getName() + ".png")
+        images = [Image.open(x) for x in imageNames]
+        widths, heights = zip(*(i.size for i in images))
+
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_im = Image.new('RGBA', (total_width, max_height))
+
+        x_offset = 0
+        for im in images:
+          new_im.paste(im, (x_offset,0))
+          x_offset += im.size[0]
+
+        new_im.save('./images/enemies.png')
+
+        await message.channel.send(file = discord.File( "./images/enemies.png"))
+
+    async def showPlayers(arr):
+        imageNames = []
+        player_names = ""
+        for key in arr:
+            imageNames.append("./images/" + _raccoonArray[int(key.getName())].getType().split(".")[1].replace("'>", "") + ".png")
+            player_names += "<@{}>".format(key.getName()) + ", "
+        images = [Image.open(x) for x in imageNames]
+        widths, heights = zip(*(i.size for i in images))
+
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_im = Image.new('RGBA', (total_width, max_height))
+
+        x_offset = 0
+        for im in images:
+          new_im.paste(im, (x_offset,0))
+          x_offset += im.size[0]
+
+        new_im.save('./images/players.png')
+
+        await message.channel.send(file = discord.File( "./images/players.png"))
+        await message.channel.send("In order: " + player_names)
+
+        fightIDs = []
+
     async def startFight():
         #.join to join fight
         #Randomly spawn an enemy
@@ -83,37 +130,122 @@ async def on_ready():
         global fighterIDs
         await chan.send("WE ARE GOING TO FIGHT SOON")
         canJoin = True
-        await asyncio.sleep(0)
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
         await chan.send("10 SECONDS TO JOIN")
-        await asyncio.sleep(10)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
         canJoin = False
-        await chan.send("NO LONGER CAN JOIN")
 
-        await chan.send(fighterIDs)
-
-        numEms = random.random() * 2 + 1
+        numEms = random.random() * 2 + 2
         totEms = []
+
         for i in range(int(numEms)):
-            totEms.append(Encounter(0, i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
-        chan.send(totEms)
+            if(random.random() * 10 < 2):
+                totEms.append(Encounter(0, "kanye", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
+            else:
+                totEms.append(Encounter(0, "zombie", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
+
+        await chan.send("There are " + str(len(totEms)) + " enemies: \n")
+        await showEnemies(totEms)
 
         fighters = []
         for ids in fighterIDs:
             fighters.append(_raccoonArray[ids])
-        chan.send(fighters)
 
-        combat = combat(fighters, totEms)
+        await chan.send("Players: \n")
+        await showPlayers(fighters)
 
         for item in totEms:
-            item.STAT_calculator(combat, fighters)
+            item.STAT_calculator(fighters)
 
-        await client.get_channel(901363239605116989).send("ready for next boss")
+
+        combat = Battle(fighters, totEms)
+        combatants = combat.turnCycle()
+
+        win = combat.winners(0, combatants)
+        i = 0
+        while True:
+            if(i >= len(combatants)):
+                i -= len(combatants)
+            await message.channel.send("It is " + str("<@{}>".format(combatants[i].getName())) +  "'s turn!")
+
+            if isinstance(combatants[i], Raccoon):
+                def checkAttack(m):
+                    return (m.content.split(" ")[0] == '.attack' and m.channel == message.channel) or (m.content.split(" ")[0] == '.stats' and m.channel == message.channel)
+                invalid = True
+                while invalid:
+
+                    try:
+                        msg = await client.wait_for('message', check=checkAttack)
+                        cont = msg.content.split(" ")
+                        input = int(cont[1])
+                    except ValueError:
+                        await message.channel.send('Wrong input, target a valid enemy (insert an integer)')
+                    else:
+                        if len(cont) != 2:
+                            await message.channel.send('Wrong input, target a valid enemy using ".attack (int)"')
+                        elif int(combatants[i].getName()) != msg.author.id:
+                            await message.channel.send("Not your turn!")
+                        elif int(cont[1]) >= len(totEms) or int(cont[1]) < 0:
+                            await message.channel.send('Please pick a valid index')
+                        else: invalid = False
+
+                combatants[i].deal_damage(totEms[int(cont[1])])
+                await message.channel.send(str(totEms[int(cont[1])].getName()) + " has " + str(totEms[int(cont[1])].getHP()) + " hp left")
+
+            elif isinstance(combatants[i], Enemy):
+                hitRac = combatants[i].nonRacctargeting(fighters)
+                await message.channel.send(str("<@{}>".format(fighters[hitRac].getName())) + " got hit!")
+                await message.channel.send(fighters[hitRac].get_stats(str("<@{}>".format(fighters[hitRac].getName()))))
+
+            for numberino in range(len(combatants)):
+                if combatants[numberino].HP <= 0:
+                    combatants.pop(numberino)
+                    break
+
+
+            i += 1
+
+            if(combat.winners(0, combatants)):
+                break
+
+        if(issubclass(type(combatants[0]), Raccoon)):
+            await client.get_channel(901363239605116989).send("Raccoons win the fight!")
+            enemy_num = len(totEms)
+            mon_gain = combat.money_formula(enemy_num, len(fighters))
+            for raccoon in fighters:
+                exp_gain = combat.active_xp_formula(raccoon, totEms)
+                _raccoonArray[int(raccoon.name)].money += mon_gain
+                await message.channel.send(str(_raccoonArray[int(raccoon.name)].EXP))
+                _raccoonArray[int(raccoon.name)].EXP += exp_gain
+                await message.channel.send(str(_raccoonArray[int(raccoon.name)].EXP))
+                update(_raccoonArray)
+
+        elif isinstance((combatants[0]), Encounter):
+            await client.get_channel(901363239605116989).send("Oh no! You lost!")
+
+
+        await client.get_channel(901363239605116989).send("End of Combat")
+
+
+        #DOREALCOMBAT
+
+        fighterIDs = []
         inFight = False
 
     read()
     fight = False
     inFight = False
     await client.get_channel(901363239605116989).send("We're live! Be prepared for random battles!")
+    await client.get_channel(901363239605116989).send(file=discord.File('./images/bonjour.gif'))
+
     while(True):
         await asyncio.sleep(random.random() * 1000 + 120)
         if not inFight:
@@ -126,6 +258,54 @@ async def on_ready():
 async def on_message(message):
     global fighterIDs
 
+
+    async def showEnemies(arr):
+        imageNames = []
+        for key in arr:
+            imageNames.append("./images/" + key.getName() + ".png")
+        images = [Image.open(x) for x in imageNames]
+        widths, heights = zip(*(i.size for i in images))
+
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_im = Image.new('RGBA', (total_width, max_height))
+
+        x_offset = 0
+        for im in images:
+          new_im.paste(im, (x_offset,0))
+          x_offset += im.size[0]
+
+        new_im.save('./images/enemies.png')
+
+        await message.channel.send(file = discord.File( "./images/enemies.png"))
+
+    async def showPlayers(arr):
+        imageNames = []
+        player_names = ""
+        for key in arr:
+            imageNames.append("./images/" + _raccoonArray[int(key.getName())].getType().split(".")[1].replace("'>", "") + ".png")
+            player_names += "<@{}>".format(key.getName()) + ", "
+        images = [Image.open(x) for x in imageNames]
+        widths, heights = zip(*(i.size for i in images))
+
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_im = Image.new('RGBA', (total_width, max_height))
+
+        x_offset = 0
+        for im in images:
+          new_im.paste(im, (x_offset,0))
+          x_offset += im.size[0]
+
+        new_im.save('./images/players.png')
+
+        await message.channel.send(file = discord.File( "./images/players.png"))
+        await message.channel.send("In order: " + player_names)
+
+        fightIDs = []
+
     async def startFight():
         #.join to join fight
         #Randomly spawn an enemy
@@ -133,66 +313,139 @@ async def on_message(message):
         global fighterIDs
         await chan.send("WE ARE GOING TO FIGHT SOON")
         canJoin = True
-        await asyncio.sleep(0)
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
+        await asyncio.sleep(2) #change later
         await chan.send("10 SECONDS TO JOIN")
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
+        await asyncio.sleep(2)
         canJoin = False
-        await chan.send("NO LONGER CAN JOIN")
 
-        numEms = random.random() * 2 + 1
+        numEms = random.random() * 2 + 2
         totEms = []
         for i in range(int(numEms)):
-            totEms.append(Encounter(0, i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
-        await chan.send("there are " + str(len(totEms)) + " enemies")
+            if(random.random() * 10 < 2):
+                totEms.append(Encounter(0, "kanye", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
+            else:
+                totEms.append(Encounter(0, "zombie", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
+
+        await chan.send("There are " + str(len(totEms)) + " enemies: \n")
+        await showEnemies(totEms)
 
         fighters = []
         for ids in fighterIDs:
             fighters.append(_raccoonArray[ids])
-        await chan.send(fighters)
+
+        await chan.send("Players: \n")
+        await showPlayers(fighters)
 
         for item in totEms:
             item.STAT_calculator(fighters)
 
 
+        combat = Battle(fighters, totEms)
+        combatants = combat.turnCycle()
 
-        win = False
-        while not win:
-            def check(m):
-                return m.content.split(" ")[0] == '.attack' and m.channel == message.channel
-            msg = await client.wait_for('message', check=check)
-            cont = msg.content.split(" ")
-            fighters[0].deal_damage(totEms[cont[1]])
-            await message.channel.send(totEms[cont[1]].getHP())
+        win = combat.winners(0, combatants)
+        i = 0
+        while True:
+            if(i >= len(combatants)):
+                i -= len(combatants)
+            await message.channel.send("It is " + str("<@{}>".format(combatants[i].getName())) +  "'s turn!")
+
+            if isinstance(combatants[i], Raccoon):
+                def checkAttack(m):
+                    return (m.content.split(" ")[0] == '.attack' and m.channel == message.channel) or (m.content.split(" ")[0] == '.stats' and m.channel == message.channel)
+                invalid = True
+                while invalid:
+
+                    try:
+                        msg = await client.wait_for('message', check=checkAttack)
+                        cont = msg.content.split(" ")
+                        input = int(cont[1])
+                    except ValueError:
+                        await message.channel.send('Wrong input, target a valid enemy (insert an integer)')
+                    else:
+                        if len(cont) != 2:
+                            await message.channel.send('Wrong input, target a valid enemy using ".attack (int)"')
+                        elif int(combatants[i].getName()) != msg.author.id:
+                            await message.channel.send("Not your turn!")
+                        elif int(cont[1]) >= len(totEms) or int(cont[1]) < 0:
+                            await message.channel.send('Please pick a valid index')
+                        else: invalid = False
+
+                combatants[i].deal_damage(totEms[int(cont[1])])
+                await message.channel.send(str(totEms[int(cont[1])].getName()) + " has " + str(totEms[int(cont[1])].getHP()) + " hp left")
+
+            elif isinstance(combatants[i], Enemy):
+                hitRac = combatants[i].nonRacctargeting(fighters)
+                await message.channel.send(str("<@{}>".format(fighters[hitRac].getName())) + " got hit!")
+                await message.channel.send(fighters[hitRac].get_stats(str("<@{}>".format(fighters[hitRac].getName()))))
+
+            for numberino in range(len(combatants)):
+                if combatants[numberino].HP <= 0:
+                    combatants.pop(numberino)
+                    break
+
+
+            i += 1
+
+            if(combat.winners(0, combatants)):
+                break
+
+        if(issubclass(type(combatants[0]), Raccoon)):
+            await client.get_channel(901363239605116989).send("Raccoons win the fight!")
+            enemy_num = len(totEms)
+            mon_gain = combat.money_formula(enemy_num, len(fighters))
+            for raccoon in fighters:
+                exp_gain = combat.active_xp_formula(raccoon, totEms)
+                _raccoonArray[int(raccoon.name)].money += mon_gain
+                await message.channel.send(str(_raccoonArray[int(raccoon.name)].EXP))
+                _raccoonArray[int(raccoon.name)].EXP += exp_gain
+                await message.channel.send(str(_raccoonArray[int(raccoon.name)].EXP))
+                update(_raccoonArray)
+
+        elif isinstance((combatants[0]), Encounter):
+            await client.get_channel(901363239605116989).send("Oh no! You lost!")
+
+
+        await client.get_channel(901363239605116989).send("End of Combat")
+
 
         #DOREALCOMBAT
 
         fighterIDs = []
-        await client.get_channel(901363239605116989).send("ready for next boss")
         inFight = False
 
 
-    def addPlayer(name, author):
+    async def addPlayer(name, author):
         read()
-        xp = getMessages(author)
+        xp = await getMessages(author)
         if name == "swordsman":
             _raccoonArray[author] = Swordsman(1, author, 0, 0, 0, 0, 0,
-                                            0, 0, 0, xp, 0, 35, 3, False, False, 0)
+                                            0, 0, 0, xp, 0, 50, 3, False, False, 0)
 
         if name == "tank":
             _raccoonArray[author] = Tank(1, author, 0, 0, 0, 0, 0,
-                                            0, 0, 0, xp, 0, 35, 1, False, False, 0)
+                                            0, 0, 0, xp, 0, 50, 1, False, False, 0)
         if name == "mage":
             _raccoonArray[author] = Mage(1, author, 0, 0, 0, 0, 0,
-                                            0, 0, 0, xp, 0, 35, 2, False, False, 0)
+                                            0, 0, 0, xp, 0, 50, 2, False, False, 0)
         if name == "archer":
             _raccoonArray[author] = ArcGun(1, author, 0, 0, 0, 0, 0,
-                                            0, 0, 0, xp, 0, 35, 5, False, False, 0)
+                                            0, 0, 0, xp, 0, 50, 5, False, False, 0)
 
         if name == "healer":
             _raccoonArray[author] = Healer(1, author, 0, 0, 0, 0, 0,
-                                            0, 0, 0, xp, 0, 35, 2, False, False, 0)
-        w = open("saves.txt", "a")
-        w.write("{" + str(author) + ":" + str(_raccoonArray[author]) + "}\n")
+                                            0, 0, 0, xp, 0, 50, 2, False, False, 0)
+
+        update(_raccoonArray)
+        await asyncio.sleep(0)
 
     async def getMessages(id):
         count_channel = client.get_channel(901288004394557463)
@@ -280,29 +533,29 @@ async def on_message(message):
         if(not any(str(message.author.id) in string for string in Lines)):
 
             if msg[1] == "swordsman":
-                addPlayer("swordsman", message.author.id)
+                await addPlayer("swordsman", message.author.id)
 
             elif msg[1] == "tank":
-                addPlayer("tank", message.author.id)
+                await addPlayer("tank", message.author.id)
 
 
             elif msg[1] == "mage":
-                addPlayer("mage", message.author.id)
+                await addPlayer("mage", message.author.id)
 
 
             elif msg[1] == "healer":
-                addPlayer("healer", message.author.id)
+                await addPlayer("healer", message.author.id)
 
 
             elif msg[1] == "archer":
-                addPlayer("archer", message.author.id)
+                await addPlayer("archer", message.author.id)
 
             else:
                 await message.channel.send('Pick one of the right classes')
                 return
             await message.add_reaction('\N{THUMBS UP SIGN}')
         else:
-            await message.channel.send("you already made a raccoon foulle")
+            await message.channel.send("You already made a raccoon foul")
 
     if msg[0] == ".bee" and admin:
         file1 = open("bee.txt", "r")
@@ -321,9 +574,12 @@ async def on_message(message):
         await message.channel.send(final)
 
     if msg[0] == ".stats":
-        await message.channel.send(_raccoonArray[message.author.id].get_stats())
+        s = "<@{}>".format(message.author.id)
+        await message.channel.send(_raccoonArray[message.author.id].get_stats(s))
 
     if msg[0] == ".join" and not message.author.id in fighterIDs:
+        global canJoin
+
         if(not isPlaying(message.author.id)):
             message.channel.send("You must have a raccon to play!")
             return
