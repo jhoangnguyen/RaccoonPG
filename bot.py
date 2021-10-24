@@ -8,6 +8,8 @@ from PIL import Image
 import ast
 from RaccoonPG import *
 import asyncio
+import random
+import copy
 load_dotenv()
 
 client = discord.Client()
@@ -18,27 +20,29 @@ _raccoonArray = {}
 def getRaccoon(str):
     arrVal = str.split(", ")
     if(arrVal[0] == "swordsman"):
-        return Swordsman(arrVal[1], arrVal[2], arrVal[3], arrVal[4], arrVal[5], arrVal[6], arrVal[7],
-                    arrVal[8], arrVal[9], arrVal[10], arrVal[11], arrVal[12], arrVal[13], arrVal[14],
-                    arrVal[15], arrVal[16], arrVal[17])
+        #LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money
+        return Swordsman(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "tank"):
-        return Tank(arrVal[1], arrVal[2], arrVal[3], arrVal[4], arrVal[5], arrVal[6], arrVal[7],
-                    arrVal[8], arrVal[9], arrVal[10], arrVal[11], arrVal[12], arrVal[13], arrVal[14],
-                    arrVal[15], arrVal[16], arrVal[17])
+        return Tank(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "healer"):
-        return Healer(arrVal[1], arrVal[2], arrVal[3], arrVal[4], arrVal[5], arrVal[6], arrVal[7],
-                    arrVal[8], arrVal[9], arrVal[10], arrVal[11], arrVal[12], arrVal[13], arrVal[14],
-                    arrVal[15], arrVal[16], arrVal[17])
+        return Healer(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "archer"):
-        return ArcGun(arrVal[1], arrVal[2], arrVal[3], arrVal[4], arrVal[5], arrVal[6], arrVal[7],
-                    arrVal[8], arrVal[9], arrVal[10], arrVal[11], arrVal[12], arrVal[13], arrVal[14],
-                    arrVal[15], arrVal[16], arrVal[17])
+        return ArcGun(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "mage"):
-        return Mage(arrVal[1], arrVal[2], arrVal[3], arrVal[4], arrVal[5], arrVal[6], arrVal[7],
-                    arrVal[8], arrVal[9], arrVal[10], arrVal[11], arrVal[12], arrVal[13], arrVal[14],
-                    arrVal[15], arrVal[16], arrVal[17])
+        return Mage(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    arrVal[15], arrVal[16], int(arrVal[17]))
 
 def read():
+    global _raccoonArray
     l = open("saves.txt", "r")
     Lines = l.readlines()
     l.close()
@@ -47,27 +51,35 @@ def read():
         vals = line.split(":")
         curr_dic = {int(vals[0].strip()[1:]): getRaccoon(str(vals[1].strip()[:-1]))}
         dummy = curr_dic | dummy
-    _raccoonArray = dummy
+    _raccoonArray = copy.deepcopy(dummy)
     return dummy
 
 
-def isPlaying(id):
-    if id in _raccoonArray:
-        return True
-    return False
+
+
+def update():
+    w = open("saves.txt", "w")
+    for key in _raccoonArray:
+        w.write("{" + str(key) + ":" + str(_raccoonArray[key]) + "}\n")
+
 
 @client.event
 async def on_ready():
   read()
+  fight = False
+  inFight = False
   await client.get_channel(901363239605116989).send("We're live! Be prepared for random battles!")
-  await asyncio.sleep(10)
-  await client.get_channel(901363239605116989).send("whoah look boss??") #put boss function/call here
+  while(fight):
+        await asyncio.sleep(random.random() * 20)
+        if not inFight:
+          await client.get_channel(901363239605116989).send("whoah look boss??") #put boss function/call here
+          inFight = True
+        else:
+          await client.get_channel(901363239605116989).send("in the middle of fight (resetting inFight)??")
+          inFight = False
 
 @client.event
 async def on_message(message):
-    count_channel = client.get_channel(901288004394557463)
-    messages = await count_channel.history().flatten()
-
     def getMessages(id):
         tot = []
         for m in messages:
@@ -98,12 +110,13 @@ async def on_message(message):
         w = open("saves.txt", "a")
         w.write("{" + str(author) + ":" + str(_raccoonArray[author]) + "}\n")
 
+    def isPlaying(id):
+        if id in _raccoonArray.keys():
+            return True
+        return False
 
     admin = False
     adminList = [259512440612585472, 128293175470063616]
-    players = read()
-
-    tot_messages = getMessages(message.author.id)
 
     if message.author.id in adminList:
         admin = True
@@ -111,10 +124,20 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    count_channel = client.get_channel(901288004394557463)
+    messages = await count_channel.history().flatten()
+    players = read()
+
+    tot_messages = getMessages(message.author.id)
+
+
     msg = message.content.split(" ")
 
-    #if(isPlaying(message.author.id)):
-    #    players[message.author.id].addEXP()
+    if isPlaying(message.author.id) and message.channel.id == 901288004394557463:
+        await message.channel.send(players[message.author.id])#FIXOIDJFOSJDOFAJID
+        players[message.author.id].passive_xp_type()
+        update()
+        await message.channel.send("updated xp")
 
     if msg[0] == ".add":
         if len(msg) != 3:
