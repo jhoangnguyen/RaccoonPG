@@ -184,7 +184,7 @@ class Swordsman(Raccoon):
         self.set_slow_xp(EXPcap, LVL)
 
     def deal_damage(self, enemy):
-        damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
         enemy.HP -= damage
         if enemy.HP <= 0:
             enemy.inCombat == False
@@ -235,7 +235,7 @@ class Tank(Raccoon):
         self.EXPcap += (((4 / 5) * (self.LVL ** 4)) + ((self.LVL ** 3) * 5) + (100 * self.LVL))
 
     def reduce_health(self, enemy):
-        damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
@@ -243,6 +243,12 @@ class Tank(Raccoon):
     def __str__(self):
         stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
+
+    def deal_damage(self, enemy):
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
+        enemy.HP -= damage
+        if enemy.HP <= 0:
+            enemy.inCombat == False
 
 
 class Mage(Raccoon):
@@ -272,10 +278,18 @@ class Mage(Raccoon):
         self.EXPcap += ((self.LVL ** 4) + (20 * (self.LVL ** 2)) + (100 * self.LVL))
 
     def reduce_health(self, enemy):
-        damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
+
+
+    def deal_damage(self, enemy):
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
+        enemy.HP -= damage
+        if enemy.HP <= 0:
+            enemy.inCombat == False
+
 
     def __str__(self):
         stats = 'mage, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
@@ -310,10 +324,18 @@ class Healer(Raccoon):
         self.EXPcap += ((self.LVL ** 4) + (20 * (self.LVL ** 2)) + (100 * self.LVL))
 
     def reduce_health(self, enemy):
-        damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
+
+
+    def deal_damage(self, enemy):
+        damage = Animal.damage_formula(self, enemy, self.POWER, LVL, ATTK, CRIT)
+        enemy.HP -= damage
+        if enemy.HP <= 0:
+            enemy.inCombat == False
+
 
     def __str__(self):
         stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
@@ -346,8 +368,15 @@ class ArcGun(Raccoon):
     def set_slow_xp(self, EXPcap, LVL):
         self.EXPcap += ((((5 / 3) * (self.LVL ** 4)) + (10 * (self.LVL ** 2)) + (100 * self.LVL)))
 
+    def deal_damage(self, enemy):
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
+        enemy.HP -= damage
+        if enemy.HP <= 0:
+            enemy.inCombat == False
+
+
     def reduce_health(self, enemy):
-        damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
+        damage = Animal.damage_formula(self, enemy, self.POWER, self.LVL, self.ATTK, self.CRIT)
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
