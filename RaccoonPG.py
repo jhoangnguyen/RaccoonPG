@@ -147,7 +147,7 @@ class Raccoon(Animal):
 
     def increase_mana(self, value):
         self.MP += value
-
+    
     #TO BE USED ON BOT RESTART#
     def passive_xp(self, num_msg):
         self.EXP += Decimal(num_msg * (1/10000))
