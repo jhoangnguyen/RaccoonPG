@@ -2,11 +2,11 @@ from RaccoonPG import *
 import random, math
 
 class Enemy(Animal):
-    def __init__():
-        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, CRIT, turn, inCombat, money)
+    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
+        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money)
         self.isBoss = False
-        self.inCombat = True
         self.POWER = 50
+        self.inCombat = True
 
     def getATTK(self):
         return self.ATTK
@@ -27,26 +27,30 @@ class Enemy(Animal):
         return self.POWER
 
 
-    def LVL_calculator(self, LVL):
+    def LVL_calculator(self, party):
         #Uses max level of raccoon as reference#
         toUse = 1
-        for key in _raccoonArray.keys():
-            if _raccoonArray[key].LVL > toUse:
-                toUse = someplayerlist[raccoon].LVL
+        for member in party:
+            if member.LVL > toUse:
+                toUse = member.LVL
         self.LVL = toUse
 
 
     def is_boss(self):
         self.isBoss = True
 
-    def reduce_health(self, raccoon):
-        damage = Animal.damage_formula(self, raccoon, POWER, LVL, ATTK, CRIT)
-        self.HP -= damage
-        if self.HP <= 0:
-            self.inCombat == False
+    def deal_damage(self, raccoon):
+        damage = Animal.damage_formula(self, raccoon, self.POWER, self.LVL, self.ATTK, self.CRIT)
+        raccoon.HP -= damage
+        if raccoon.HP <= 0:
+            raccoon.inCombat == False
+    
+    def nonRacctargeting(self, raccoon_array):
+        raccoon_to_hit = random.randint(1, self.get_party.length())
+        self.deal_damage(raccoon_array[raccoon_to_hit])
 
 class Encounter(Enemy):
-    def __init__():
+    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat):
         super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat)
 
     def STAT_calculator(self, combat, combatants):
@@ -85,7 +89,7 @@ class Encounter(Enemy):
 
 
 class Boss(Enemy):
-    def __init__():
+    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat):
         super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat)
         self.isBoss = True
         
@@ -101,7 +105,7 @@ class Boss(Enemy):
             self.SPD = random.randint(1, 3)
             self.CRIT = random.randint(1, 5)
             
-            for i in range(1, level):
+            for i in range(1, self.LVL):
                 self.HP += (self.HP * scalar)
                 self.MP += (self.MP * scalar)
                 self.ATTK += (self.ATTK * scalar)

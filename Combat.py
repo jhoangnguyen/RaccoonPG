@@ -1,55 +1,85 @@
 from RaccoonPG import *
+from NonRaccoon import *
 import random, math
-class Combat(Animal):
-    def __init__():
-        super().__init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money)
-    def turnCycle(self, SPD):
-        for key in _raccoonArray.keys():
-            if _raccoonArray[key].inCombat:
-                combatants.append(_raccoonArray[key])
-        for key in _enemyArray.keys():
-            if _enemyArray[key].inCombat:
-                combatants.append(_enemyArray[key])
+class Combat():
+    def __init__(self, party, enemies):
+        self.party = party
+        self.enemies = enemies
 
-        combatants.sort(key = max(SPD))
-        #stuff to allow specific order of inputs from specific raccoon#
-        return combatants
+    def get_party(self):
+        return self.party
 
-    def numRaccoons(self, combatants):
-        count = 0
+    def get_enemies(self):
+        return self.enemies
+
+    def raccoonList(self, combatants):
+        result = []
         for item in combatants:
             if isinstance(item, Raccoon):
+                result.append(item)
+        return result
+
+    def numRaccoons(self, combatants):
+        return len(combatants) - self.num_enemies(combatants)
+
+    def num_enemies(self, combatants):
+        count = 0
+        for item in combatants:
+            if isinstance(item, Enemy):
                 count += 1
         return count
 
-    def highestLVL(self, combatants):
-        for item in combatants:
-            if isinstance(item, Raccoon):
-                if item.getLVL() > level:
-                    level = item.getLVL()
+    def turnCycle(self):
+        result = []
+        combatants = []
+        for member in self.get_party():
+            combatants.append(member)
+        for enemy in self.get_enemies():
+            combatants.append(enemy)
+        result = sorted(combatants, key = lambda x: x.SPD, reverse = True)
+        return result
+            
+    def highestLVL(self):
+        level = 0
+        for member in self.get_party():
+            if isinstance(member, Raccoon):
+                if member.getLVL() > level:
+                    level = member.getLVL()
         return level
 
-    def money_formula(self, enemy, combatants):
-        numRaccoons = self.numRaccoons(combatants)
+    def money_formula(self, enemy, raccoons):
         total = 0
         base = 100
         bonus = 1
         if enemy.isBoss:
             base = 500
-        total = ((base * self.highestLVL(combatants) *  bonus * (numRaccoons - 1)) / numRaccoons) // 1
+        total = ((base * self.highestLVL() *  bonus * (raccoons - 1)) / raccoons) // 1
         return total
+    
+    def active_xp_formula(self, enemies):
+        gain = (((((5 / 3) * (self.LVL ** 4)) + (10 * (self.LVL ** 2)) + (100 * self.LVL))) / 5)
+        for item in enemies:
+            if item.isBoss:
+                gain *= 5
+        return gain
+
 
     def winners(self, enemy, combatants):
         # If boss.HP <= 0, raccoons win and end combat
         # ELSE IF all raccoons HP <= 0 and boss.HP > 0, raccoons lose and end combat
         # ELSE worry about this case later (what happens if a few party members die? split exp? set cooldown
         # for raccoon to wake up?)
-        if enemy.HP <= 0:
-            return True
+        party = self.raccoonList(combatants)
+        if all(item == isinstance(item, Raccoon) for item in combatants) and len(combatants) > 0:
+            print("Some game-ending function for raccoon's victory")
+            enemy_num = self.num_enemies(combatants)
+            to_gain_money = self.money_formula(enemy_num, len(combatants) - enemy_num)
+            to_gain_exp = self.active_xp_formula(self.get_enemies)
+            for raccoon in party:
+                raccoon.money += to_gain_money
+                raccoon.EXP += to_gain_exp
+        elif all(item == isinstance(item, Enemy) for item in combatants):
+            print("Some game-ending function for when raccoons lose")
+            # elif enemy.HP > 0 and 
         
-
-
-    # def speedcheck(self, enemy):
-
-    # Have to implement still 
-    # - inCombat, turn
+    # def check_status(self, turnorder):
