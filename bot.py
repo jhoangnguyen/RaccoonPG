@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import sys
 from PIL import Image
 import ast
-from RacoonPG import *
+from RaccoonPG import *
 import asyncio
 load_dotenv()
 
@@ -132,7 +132,7 @@ async def on_message(message):
         imageNames = []
         player_names = ""
         for key in players:
-            imageNames.append("./images/" + players[key].getType() + ".png")
+            imageNames.append("./images/" + players[key].getType().split(".")[1].replace("'>", "") + ".png")
             player_names += "<@{}>".format(key) + ", "
         images = [Image.open(x) for x in imageNames]
         widths, heights = zip(*(i.size for i in images))
@@ -205,7 +205,7 @@ async def on_message(message):
         final = ""
         for key in test:
             #if type(name) == "NoneType":
-            final += "<@{}>".format(key) + " is a " + test[key].getType() + "\n"
+            final += "<@{}>".format(key) + " is a " + players[key].getType().split(".")[1].replace("'>", "") + "\n"
         await message.channel.send(final)
 
     if msg[0] == ".stats":

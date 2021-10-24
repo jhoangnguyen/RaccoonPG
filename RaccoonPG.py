@@ -31,10 +31,10 @@ class Animal:
 
     def getATTK(self):
         return self.ATTK
-    
+
     def getDEF(self):
         return self.DEF
-    
+
     def getMATTK(self):
         return self.MATTK
 
@@ -43,7 +43,7 @@ class Animal:
 
     def getSPD(self):
         return self.SPD
-    
+
     def getPOWER(self):
         return self.POWER
 
@@ -141,8 +141,8 @@ class Swordsman(Raccoon):
         self.inCombat = False
         self.money = 0
         self.LVL = 1
-        
-        
+
+
         self.set_slow_xp(EXPcap, LVL)
 
     def reduce_health(self, enemy):
@@ -187,7 +187,7 @@ class Tank(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-    
+
     def __str__(self):
         stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
@@ -214,7 +214,7 @@ class Mage(Raccoon):
         self.LVL = 1
 
         self.set_medium_xp(EXPcap, LVL)
-        
+
 
     def set_medium_xp(self, EXPcap, LVL):
         self.EXPcap += ((self.LVL ** 4) + (20 * (self.LVL ** 2)) + (100 * self.LVL))
@@ -262,7 +262,7 @@ class Healer(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-    
+
     def __str__(self):
         stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
@@ -299,9 +299,7 @@ class ArcGun(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-    
+
     def __str__(self):
         stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
-
-
