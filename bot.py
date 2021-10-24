@@ -83,7 +83,7 @@ async def on_ready():
         global fighterIDs
         await chan.send("WE ARE GOING TO FIGHT SOON")
         canJoin = True
-        await asyncio.sleep(50)
+        await asyncio.sleep(0)
         await chan.send("10 SECONDS TO JOIN")
         await asyncio.sleep(10)
         canJoin = False
@@ -94,7 +94,7 @@ async def on_ready():
         numEms = random.random() * 2 + 1
         totEms = []
         for i in range(int(numEms)):
-            totEms.append(Encounter()) #0, i, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False
+            totEms.append(Encounter(0, i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
         chan.send(totEms)
 
         fighters = []
@@ -102,8 +102,10 @@ async def on_ready():
             fighters.append(_raccoonArray[ids])
         chan.send(fighters)
 
+        combat = combat(fighters, totEms)
+
         for item in totEms:
-            item.STAT_calculator(0, fighters)
+            item.STAT_calculator(combat, fighters)
 
         await client.get_channel(901363239605116989).send("ready for next boss")
         inFight = False
@@ -127,37 +129,46 @@ async def on_message(message):
     async def startFight():
         #.join to join fight
         #Randomly spawn an enemy
-        global fighterIDs
         chan = client.get_channel(901363239605116989)
-
+        global fighterIDs
         await chan.send("WE ARE GOING TO FIGHT SOON")
         canJoin = True
         await asyncio.sleep(0)
         await chan.send("10 SECONDS TO JOIN")
-        await asyncio.sleep(10)
+        await asyncio.sleep(5)
         canJoin = False
         await chan.send("NO LONGER CAN JOIN")
-
-        await chan.send(fighterIDs)
 
         numEms = random.random() * 2 + 1
         totEms = []
         for i in range(int(numEms)):
-            totEms.append(Encounter()) #0, i, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False
-        chan.send(totEms)
+            totEms.append(Encounter(0, i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, False, False)) #
+        await chan.send("there are " + str(len(totEms)) + " enemies")
 
         fighters = []
         for ids in fighterIDs:
             fighters.append(_raccoonArray[ids])
-        chan.send(fighters)
+        await chan.send(fighters)
 
         for item in totEms:
-            item.STAT_calculator(0, fighters)
+            item.STAT_calculator(fighters)
 
+
+
+        win = False
+        while not win:
+            def check(m):
+                return m.content.split(" ")[0] == '.attack' and m.channel == message.channel
+            msg = await client.wait_for('message', check=check)
+            cont = msg.content.split(" ")
+            fighters[0].deal_damage(totEms[cont[1]])
+            await message.channel.send(totEms[cont[1]].getHP())
+
+        #DOREALCOMBAT
+
+        fighterIDs = []
         await client.get_channel(901363239605116989).send("ready for next boss")
         inFight = False
-
-
 
 
     def addPlayer(name, author):
@@ -319,10 +330,18 @@ async def on_message(message):
         addFighter(message.author.id)
         await message.add_reaction('\N{THUMBS UP SIGN}')
 
-
     if msg[0] == ".startBattle" and admin:
         await startFight()
 
+    #if msg[0] == ".t" and admin:
+    #    def check(m):
+    #        return m.content.split(" ")[0] == '.attack' and m.channel == message.channel
+    #    msg = await client.wait_for('message', check=check)
+    #    await message.channel.send(msg.content)
+    #.attack NUM
+    #if msg[0] == ".attack" and message.author.id in fighterIDs: #AND IS THEIR TURN
+    #    fighters[0].deal_damage(totEms[msg[1]])
+    #    await message.channel.send("Enemy " + msg[1] + " has " + totEms[msg[1]].getHP() + " hp left")
     #if msg[0] == ".startBoss" and admin:
         #startBossFight()
 

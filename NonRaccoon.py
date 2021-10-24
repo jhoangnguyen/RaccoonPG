@@ -1,5 +1,6 @@
 from RaccoonPG import *
 import random, math
+import Combat
 
 class Enemy(Animal):
     def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
@@ -10,10 +11,10 @@ class Enemy(Animal):
 
     def getATTK(self):
         return self.ATTK
-    
+
     def getDEF(self):
         return self.DEF
-    
+
     def getMATTK(self):
         return self.MATTK
 
@@ -22,7 +23,7 @@ class Enemy(Animal):
 
     def getSPD(self):
         return self.SPD
-    
+
     def getPOWER(self):
         return self.POWER
 
@@ -44,17 +45,25 @@ class Enemy(Animal):
         raccoon.HP -= damage
         if raccoon.HP <= 0:
             raccoon.inCombat == False
-    
+
     def nonRacctargeting(self, raccoon_array):
         raccoon_to_hit = random.randint(1, self.get_party.length())
         self.deal_damage(raccoon_array[raccoon_to_hit])
 
 class Encounter(Enemy):
-    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat):
-        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat)
+    def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
+        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money)
 
-    def STAT_calculator(self, combat, combatants):
-        level = combat.highestLVL(combatants)
+    def highestLVL(self, raccoons):
+        result = 0
+        raccoons = sorted(raccoons, key = lambda x: x.LVL)
+        for raccoon in raccoons:
+            if raccoon.LVL > result:
+                result = raccoon.LVL
+        return result
+
+    def STAT_calculator(self, raccoons):
+        level = self.highestLVL(raccoons)
         scalar = 0.04
         self.HP = random.randint(30, 90)
         self.MP = random.randint(30, 70)
@@ -75,7 +84,7 @@ class Encounter(Enemy):
             self.DODGE += (self.DODGE * scalar)
             self.SPD += (self.SPD * scalar)
             self.CRIT += (self.CRIT * scalar)
-        
+
         self.HP //= 1
         self.MP //= 1
         self.ATTK //= 1
@@ -92,7 +101,7 @@ class Boss(Enemy):
     def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat):
         super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, POWER, CRIT, turn, inCombat)
         self.isBoss = True
-        
+
         def STAT_calculator(self):
             scalar = 0.02
             self.HP = random.randint(200, 300)
@@ -104,7 +113,7 @@ class Boss(Enemy):
             self.DODGE = random.randint(1, 5)
             self.SPD = random.randint(1, 3)
             self.CRIT = random.randint(1, 5)
-            
+
             for i in range(1, self.LVL):
                 self.HP += (self.HP * scalar)
                 self.MP += (self.MP * scalar)
@@ -115,7 +124,7 @@ class Boss(Enemy):
                 self.DODGE += (self.DODGE * scalar)
                 self.SPD += (self.SPD * scalar)
                 self.CRIT += (self.CRIT * scalar)
-        
+
             self.HP //= 1
             self.MP //= 1
             self.ATTK //= 1

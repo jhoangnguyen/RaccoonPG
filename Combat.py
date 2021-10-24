@@ -1,7 +1,7 @@
 from RaccoonPG import *
 from NonRaccoon import *
 import random, math
-class Combat():
+class combat():
     def __init__(self, party, enemies):
         self.party = party
         self.enemies = enemies
@@ -38,7 +38,7 @@ class Combat():
             combatants.append(enemy)
         result = sorted(combatants, key = lambda x: x.SPD, reverse = True)
         return result
-            
+
     def highestLVL(self):
         level = 0
         for member in self.get_party():
@@ -55,7 +55,7 @@ class Combat():
             base = 500
         total = ((base * self.highestLVL() *  bonus * (raccoons - 1)) / raccoons) // 1
         return total
-    
+
     def active_xp_formula(self, enemies):
         gain = (((((5 / 3) * (self.LVL ** 4)) + (10 * (self.LVL ** 2)) + (100 * self.LVL))) / 5)
         for item in enemies:
@@ -80,6 +80,6 @@ class Combat():
                 raccoon.EXP += to_gain_exp
         elif all(item == isinstance(item, Enemy) for item in combatants):
             print("Some game-ending function for when raccoons lose")
-            # elif enemy.HP > 0 and 
-        
+            # elif enemy.HP > 0 and
+
     # def check_status(self, turnorder):
