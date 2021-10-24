@@ -1,4 +1,6 @@
 import random, math
+from decimal import Decimal
+
 
 class Animal:
     def __init__ (self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
@@ -67,7 +69,7 @@ class Animal:
 
     def getmoney(self):
         return self.money
-        
+
 
 
     def set_slow_xp(self, EXPcap, LVL):
@@ -148,11 +150,11 @@ class Raccoon(Animal):
 
     #TO BE USED ON BOT RESTART#
     def passive_xp(self, num_msg):
-        self.EXP += (num_msg * (1/100000))
+        self.EXP += Decimal(num_msg * (1/10000))
 
     #TO BE USED WHEN ACTIVE#
     def passive_xp_type(self):
-        self.EXP += 1/100000
+        self.EXP += Decimal(1/10000)
 
 class Swordsman(Raccoon):
 
@@ -198,11 +200,11 @@ class Swordsman(Raccoon):
         self.MP -= 20
         self.DEF -= 15
         self.MDEF -= 10
-        
+
 
 
     def __str__(self):
-        stats = 'swordsman, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'swordsman, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -239,7 +241,7 @@ class Tank(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -276,7 +278,7 @@ class Mage(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'mage, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'mage, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -314,7 +316,7 @@ class Healer(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -351,5 +353,5 @@ class ArcGun(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats

@@ -10,6 +10,8 @@ from RaccoonPG import *
 import asyncio
 import random
 import copy
+from decimal import Decimal
+
 load_dotenv()
 
 client = discord.Client()
@@ -22,23 +24,23 @@ def getRaccoon(str):
     if(arrVal[0] == "swordsman"):
         #LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money
         return Swordsman(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
-                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), Decimal(arrVal[11]), Decimal(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
                     arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "tank"):
         return Tank(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
-                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), Decimal(arrVal[11]), Decimal(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
                     arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "healer"):
         return Healer(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
-                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), Decimal(arrVal[11]), Decimal(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
                     arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "archer"):
         return ArcGun(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
-                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), Decimal(arrVal[11]), Decimal(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
                     arrVal[15], arrVal[16], int(arrVal[17]))
     if(arrVal[0] == "mage"):
         return Mage(int(arrVal[1]), arrVal[2], int(arrVal[3]), int(arrVal[4]), int(arrVal[5]), int(arrVal[6]), int(arrVal[7]),
-                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), float(arrVal[11]), float(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
+                    int(arrVal[8]), int(arrVal[9]), int(arrVal[10]), Decimal(arrVal[11]), Decimal(arrVal[12]), int(arrVal[13]), int(arrVal[14]),
                     arrVal[15], arrVal[16], int(arrVal[17]))
 
 def read():
@@ -134,10 +136,10 @@ async def on_message(message):
     msg = message.content.split(" ")
 
     if isPlaying(message.author.id) and message.channel.id == 901288004394557463:
-        await message.channel.send(players[message.author.id])#FIXOIDJFOSJDOFAJID
+        await message.channel.send(players[message.author.id].getEXP())#FIXOIDJFOSJDOFAJID
         players[message.author.id].passive_xp_type()
+        await message.channel.send(players[message.author.id].getEXP())#FIXOIDJFOSJDOFAJID
         update()
-        await message.channel.send("updated xp")
 
     if msg[0] == ".add":
         if len(msg) != 3:
