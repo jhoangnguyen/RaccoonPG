@@ -1,5 +1,5 @@
 import random, math
-from decimal import Decimal
+#from float import float
 
 
 class Animal:
@@ -14,8 +14,8 @@ class Animal:
         self.MDEF = MDEF
         self.DODGE = DODGE
         self.SPD = SPD
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.CRIT = CRIT
         self.turn = False
@@ -96,7 +96,7 @@ class Animal:
         return targets
 
     def __str__(self):
-        stats = 'Level: {0}, Name: {1}, Health: {2}, Mana: {3}, Attack: {4}, Defense: {5}, M_Attack: {6}, M_Defense: {7}, Dodge: {8}, Speed: {9}, EXP: {10}, EXPcap: {11}, Power: {12}, CRTchance: {13}, Turn: {14}, inCombat: {15}, Money: {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'Level: {0}, Name: {1}, Health: {2}, Mana: {3}, Attack: {4}, Defense: {5}, M_Attack: {6}, M_Defense: {7}, Dodge: {8}, Speed: {9}, EXP: {10}, EXPcap: {11}, Power: {12}, CRTchance: {13}, Turn: {14}, inCombat: {15}, Money: {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
     def get_stats(self):
@@ -140,9 +140,9 @@ class Raccoon(Animal):
     def lvl_up(self, EXP, EXPcap, LVL):
         temp = 0
         if self.EXP > self.EXPcap:
-            temp = self.EXP - self.EXPcap
+            temp = float(self.EXP - self.EXPcap)
             LVL += 1
-            self.EXPcap = 0
+            self.EXPcap = float(0)
             self.EXP = temp
 
     def increase_mana(self, value):
@@ -150,11 +150,11 @@ class Raccoon(Animal):
 
     #TO BE USED ON BOT RESTART#
     def passive_xp(self, num_msg):
-        self.EXP += Decimal(num_msg * (1/10000))
+        self.EXP += float(num_msg * (1/10000))
 
     #TO BE USED WHEN ACTIVE#
     def passive_xp_type(self):
-        self.EXP += Decimal(1/10000)
+        self.EXP += float(1/10000)
 
 class Swordsman(Raccoon):
 
@@ -172,8 +172,8 @@ class Swordsman(Raccoon):
         self.DODGE = 2
         self.CRIT = 3
         self.SPD = 10
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.turn = False
         self.inCombat = False
@@ -204,7 +204,7 @@ class Swordsman(Raccoon):
 
 
     def __str__(self):
-        stats = 'swordsman, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'swordsman, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -221,8 +221,8 @@ class Tank(Raccoon):
         self.DODGE = 1
         self.CRIT = 3
         self.SPD = 5
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.turn = False
         self.inCombat = False
@@ -241,7 +241,7 @@ class Tank(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -257,8 +257,8 @@ class Mage(Raccoon):
         self.DODGE = 2
         self.CRIT = 3
         self.SPD = 9
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.turn = False
         self.inCombat = False
@@ -278,7 +278,7 @@ class Mage(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'mage, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'mage, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -295,8 +295,8 @@ class Healer(Raccoon):
         self.DODGE = 2
         self.CRIT = 3
         self.SPD = 9
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.turn = False
         self.inCombat = False
@@ -316,7 +316,7 @@ class Healer(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
 
@@ -333,8 +333,8 @@ class ArcGun(Raccoon):
         self.DODGE = 4
         self.CRIT = 5
         self.SPD = 12
-        self.EXP = EXP
-        self.EXPcap = 0
+        self.EXP = float(EXP)
+        self.EXPcap = float(0)
         self.POWER = POWER
         self.turn = False
         self.inCombat = False
@@ -353,5 +353,5 @@ class ArcGun(Raccoon):
             self.inCombat == False
 
     def __str__(self):
-        stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, Decimal(self.EXP), Decimal(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, float(self.EXP), float(self.EXPcap), self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
