@@ -26,6 +26,18 @@ class Animal:
     def getType(self):
         return str(type(self)).lower()
 
+    def getEXP(self):
+        return self.EXP
+
+    def getEXPcap(self):
+        return self.EXPcap
+
+    def getHP(self):
+        return self.HP
+
+    def getMP(self):
+        return self.MP
+
     def getLVL(self):
         return self.LVL
 
@@ -46,6 +58,16 @@ class Animal:
 
     def getPOWER(self):
         return self.POWER
+
+    def getCRIT(self):
+        return self.CRIT
+
+    def getDODGE(self):
+        return self.DODGE
+
+    def getmoney(self):
+        return self.money
+        
 
 
     def set_slow_xp(self, EXPcap, LVL):
@@ -77,12 +99,22 @@ class Animal:
 
     def get_stats(self):
         result = ""
-        stats = [self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF, \
-        self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, \
-        self.POWER, self.CRIT, self.turn, self.inCombat, self.money]
-        result += "------------------------------\n"
+        stats = {"Level:": self.LVL, "Name:": self.name, "Health:": self.HP, "Mana:": self.MP, \
+                "Attack:": self.ATTK, "Defense:": self.DEF, "M_Attack:": self.MATTK, "M_Defense:": self.MDEF, \
+                "Dodge:": self.DODGE, "Speed:": self.SPD, "EXP:": self.EXP, "EXPCap:": self.EXPcap, \
+                "Power:": self.POWER, "CRTchance:": self.CRIT, "Turn:": self.turn, "inCombat:": self.inCombat, \
+                "Money:": self.money}
+        result += "-" * 70 + "\n"
         for i in range(len(stats)):
-            result += "Level: "
+            label = list(stats.keys())[i]
+            val = str(list(stats.values())[i])
+            gap = " " * (20 - (len(label) + len(val) + 1))
+            if i % 4 == 0:
+                result += label + " " + val + gap + "\n"
+            else:
+                result += label + " " + val + gap
+        result += "-" * 70 + "\n"
+        return result
 
 
 class Raccoon(Animal):
@@ -93,6 +125,9 @@ class Raccoon(Animal):
 
     def join_combat(self):
         self.inCombat = True
+
+    def increase_health(self, value):
+        self.HP += value
 
     def reduce_health(self, enemy):
         damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
@@ -108,15 +143,16 @@ class Raccoon(Animal):
             self.EXPcap = 0
             self.EXP = temp
 
-
+    def increase_mana(self, value):
+        self.MP += value
 
     #TO BE USED ON BOT RESTART#
     def passive_xp(self, num_msg):
-        self.exp += (num_msg * (1/100000))
+        self.EXP += (num_msg * (1/100000))
 
     #TO BE USED WHEN ACTIVE#
     def passive_xp_type(self):
-        self.exp += 1/100000
+        self.EXP += 1/100000
 
 class Swordsman(Raccoon):
 
@@ -145,11 +181,25 @@ class Swordsman(Raccoon):
 
         self.set_slow_xp(EXPcap, LVL)
 
-    def reduce_health(self, enemy):
+    def deal_damage(self, enemy):
         damage = Animal.damage_formula(self, enemy, POWER, LVL, ATTK, CRIT)
-        self.HP -= damage
-        if self.HP <= 0:
-            self.inCombat == False
+        enemy.HP -= damage
+        if enemy.HP <= 0:
+            enemy.inCombat == False
+
+    def strike_ab(self, enemy):
+        self.POWER += 15
+        self.MP -= 10
+        self.deal_damage(enemy)
+        self.POWER -= 10
+
+    def throttle(self):
+        self.POWER += 10
+        self.MP -= 20
+        self.DEF -= 15
+        self.MDEF -= 10
+        
+
 
     def __str__(self):
         stats = 'swordsman, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
