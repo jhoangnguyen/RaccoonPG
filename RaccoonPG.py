@@ -15,6 +15,7 @@ class Animal:
         self.EXP = EXP
         self.EXPcap = 0
         self.POWER = POWER
+        self.CRIT = CRIT
         self.turn = False
         self.inCombat = False
         self.money = 0
@@ -23,17 +24,17 @@ class Animal:
         combatants = []
 
     def getType(self):
-        return str(type(self)).lower().split(".")[1].replace(">", "").replace("'", "")
+        return str(type(self)).lower()
 
     def getLVL(self):
         return self.LVL
 
     def getATTK(self):
         return self.ATTK
-
+    
     def getDEF(self):
         return self.DEF
-
+    
     def getMATTK(self):
         return self.MATTK
 
@@ -42,7 +43,7 @@ class Animal:
 
     def getSPD(self):
         return self.SPD
-
+    
     def getPOWER(self):
         return self.POWER
 
@@ -71,17 +72,22 @@ class Animal:
         return targets
 
     def __str__(self):
-        stats = ' (Level: {0}, Name: {1}, Health: {2}, Mana: {3}, Attack: {4}, Defense: {5}, M_Attack: {6}, M_Defense: {7}, Dodge: {8}, Speed: {9}, EXP: {10}, EXPcap: {11}, Power: {12}, CRTchance: {13}, Turn: {14}, inCombat: {15}, Money: {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
+        stats = 'Level: {0}, Name: {1}, Health: {2}, Mana: {3}, Attack: {4}, Defense: {5}, M_Attack: {6}, M_Defense: {7}, Dodge: {8}, Speed: {9}, EXP: {10}, EXPcap: {11}, Power: {12}, CRTchance: {13}, Turn: {14}, inCombat: {15}, Money: {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
 
-
-
-
+    def get_stats(self):
+        result = ""
+        stats = [self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF, \
+        self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, \
+        self.POWER, self.CRIT, self.turn, self.inCombat, self.money]
+        result += "------------------------------\n"
+        for i in range(len(stats)):
+            result += "Level: "
 
 
 class Raccoon(Animal):
     def __init__ (self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
-        super().__init__(name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, CRIT, turn, inCombat, money)
+        super().__init__(LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money)
         self.POWER = 35
         self.LVL = 1
 
@@ -117,12 +123,6 @@ class Swordsman(Raccoon):
     def set_slow_xp(self, EXPcap, LVL):
         self.EXPcap += ((((5 / 3) * (self.LVL ** 4)) + (10 * (self.LVL ** 2)) + (100 * self.LVL)))
 
-    def set_medium_xp(self, EXPcap, LVL):
-        self.EXPcap += ((self.LVL ** 4) + (20 * (self.LVL ** 2)) + (100 * self.LVL))
-
-    def set_fast_xp(self, EXPcap, LVL):
-        self.EXPcap += (((4 / 5) * (self.LVL ** 4)) + ((self.LVL ** 3) * 5) + (100 * self.LVL))
-
     def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
         self.name = name
         self.HP = 65
@@ -141,6 +141,8 @@ class Swordsman(Raccoon):
         self.inCombat = False
         self.money = 0
         self.LVL = 1
+        
+        
         self.set_slow_xp(EXPcap, LVL)
 
     def reduce_health(self, enemy):
@@ -185,10 +187,11 @@ class Tank(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-
+    
     def __str__(self):
         stats = 'tank, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
+
 
 class Mage(Raccoon):
     def __init__(self, LVL, name, HP, MP, ATTK, DEF, MATTK, MDEF, DODGE, SPD, EXP, EXPcap, POWER, CRIT, turn, inCombat, money):
@@ -211,7 +214,7 @@ class Mage(Raccoon):
         self.LVL = 1
 
         self.set_medium_xp(EXPcap, LVL)
-
+        
 
     def set_medium_xp(self, EXPcap, LVL):
         self.EXPcap += ((self.LVL ** 4) + (20 * (self.LVL ** 2)) + (100 * self.LVL))
@@ -259,7 +262,7 @@ class Healer(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-
+    
     def __str__(self):
         stats = 'healer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
@@ -296,7 +299,9 @@ class ArcGun(Raccoon):
         self.HP -= damage
         if self.HP <= 0:
             self.inCombat == False
-
+    
     def __str__(self):
         stats = 'archer, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}'.format(self.LVL, self.name, self.HP, self.MP, self.ATTK, self.DEF,  self.MATTK, self.MDEF, self.DODGE, self.SPD, self.EXP, self.EXPcap, self.POWER, self.CRIT, self.turn, self.inCombat, self.money)
         return stats
+
+
