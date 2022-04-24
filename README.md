@@ -5,3 +5,5 @@ Features include:
    - Interactions with user chat inputs
    - Saving joined users in text files for inactivity
    - Utilizes Discord's API Wrapper Discord.py
+
+Developed by David Ban, Hailey Tran, and Johnson Nguyen
